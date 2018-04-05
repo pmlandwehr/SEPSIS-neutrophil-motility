@@ -7,7 +7,7 @@ import os
 
 from sklearn.metrics import roc_curve, roc_auc_score, accuracy_score
 from sklearn.linear_model import LogisticRegression
-from sklearn.preprocessing import StandardScaler, PolynomialFeatures
+from sklearn.preprocessing import StandardScaler
 
 
 def load_raw(patient_name, draw_num):
@@ -88,7 +88,6 @@ def shuffle_train(X, Y, teX):
     sY = Y[idx]
     scalar = StandardScaler()
     lr = LogisticRegression(C=0.7)
-    pf = PolynomialFeatures()
     sX = scalar.fit_transform(sX)
     lr.fit(sX, sY)
 
