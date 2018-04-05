@@ -83,13 +83,11 @@ def gather_feats_labels(patients, name_to_feats, name_to_labels):
     return np.asarray(X), np.asarray(Y)
 
 def shuffle_train(X, Y, teX):
-    """Fit a model on shuffled samples and labels X and Y, and return prediction on the training data and on test samples TeX"""
-    idx = np.random.permutation(np.arange(len(X)))
-    sX = X[idx]
-    sY = Y[idx]
-    
+    """Fit a model on shuffled samples and labels X and Y, and return prediction on the training data and on test samples TeX"""    
     pipe = make_pipeline(StandardScaler(), LogisticRegression(C=0.7))
-    pipe.fit(sX, sY)
+
+    idx = np.random.permutation(np.arange(len(X)))
+    pipe.fit(X[idx], Y[idx])
     
     return pipe.predict_proba(X)[:, 1], pipe.predict_proba(teX)[:, 1]
 
