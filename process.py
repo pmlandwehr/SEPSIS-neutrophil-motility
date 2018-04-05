@@ -7,6 +7,7 @@ import os
 
 from sklearn.metrics import roc_curve, roc_auc_score, accuracy_score
 from sklearn.linear_model import LogisticRegression
+from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
 
 
@@ -82,22 +83,15 @@ def gather_feats_labels(patients, name_to_feats, name_to_labels):
     return np.asarray(X), np.asarray(Y)
 
 def shuffle_train(X, Y, teX):
-    idx = np.arange(len(X))
-    np.random.shuffle(idx)
+    """Fit a model on shuffled samples and labels X and Y, and return prediction on the training data and on test samples TeX"""
+    idx = np.random.permutation(np.arange(len(X)))
     sX = X[idx]
     sY = Y[idx]
-    scalar = StandardScaler()
-    lr = LogisticRegression(C=0.7)
-    sX = scalar.fit_transform(sX)
-    lr.fit(sX, sY)
-
-    teX = scalar.transform(teX)
     
-    X = scalar.transform(X)
-
-    tePY = lr.predict_proba(teX)[:, 1]
-    trPY = lr.predict_proba(X)[:, 1]
-    return trPY, tePY
+    pipe = make_pipeline(StandardScaler(), LogisticRegression(C=0.7))
+    pipe.fit(sX, sY)
+    
+    return pipe.predict_proba(X)[:, 1], pipe.predict_proba(teX)[:, 1]
 
 def main():
     name_to_labels = load_labels()
