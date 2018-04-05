@@ -1,3 +1,4 @@
+from collections import defaultdict
 from glob import glob
 import os
 from tqdm import trange
@@ -37,7 +38,6 @@ category10_in_hex = [
       "17becf"]
 category10 = [hex_to_rgb(val) for val in category10_in_hex]
 
-files = npr.permutation(glob(os.path.join('csvs', '*.csv')))
 
 def files_to_cells(files):
     cell_accum = []
@@ -93,13 +93,13 @@ def features(paths, label):
 
     dx = np.abs((x[1:] - x[0:-1]) / np.diff(t))
     dy = np.abs((y[1:] - y[0:-1]) / np.diff(t))
-    #plt.plot(dx, dy, '-o')
-    #plt.show()
 
     ddx = np.diff(x)
     ddy = np.diff(y)
 
     return len(y), np.var(ddx), np.var(np.sign(dx))
+
+files = npr.permutation(glob(os.path.join('csvs', '*.csv')))
 
 dd = {}
 dd["Healthy"] = 0
@@ -186,8 +186,7 @@ data = []
 for y in all_Y:
     data.append(np.mean(y))
 
-print np.mean(data)
-from collections import defaultdict
+print(np.mean(data))
 
 def run_once():
     # train test split on a patient basis
@@ -261,7 +260,6 @@ def run_once():
         Y = np.concatenate(teFY[i:i+1], axis=0)
 
         if len(X) <= 0:
-            #print "no data", files[i]
             continue
 
         p = lr.predict_proba(X)
@@ -274,5 +272,5 @@ def run_once():
     return heldout_auc
 
 accurs = [run_once() for x in trange(50)]
-print np.mean(accurs), "mean_auc"
+print('mean_auc: {}'.format(np.mean(accurs)))
 plt.show()
