@@ -7,6 +7,23 @@ import numpy.random as npr
 import pandas as pd
 from matplotlib import pylab as plt
 
+
+def hex_to_rgb(value):
+    lv = len(value)
+    return tuple(
+        int(value[i:i + lv // 3], 16) / 255. for i in range(0, lv, lv // 3)
+    )
+
+def cell_type_from_file(f):
+    print(f)
+    if "PRESE" in f:
+        return 0
+    if "t02" in f.lower():
+        return 1
+    if "t04" in f.lower():
+        return 1
+    return 0
+
 category10_in_hex = [
       "1f77b4",
       "ff7f0e",
@@ -18,24 +35,7 @@ category10_in_hex = [
       "7f7f7f",
       "bcbd22",
       "17becf"]
-
-def hex_to_rgb(value):
-    lv = len(value)
-    return tuple(
-        int(value[i:i + lv // 3], 16) / 255. for i in range(0, lv, lv // 3)
-    )
-
 category10 = [hex_to_rgb(val) for val in category10_in_hex]
-
-def cell_type_from_file(f):
-    print f
-    if "PRESE" in f:
-        return 0
-    if "t02" in f.lower():
-        return 1
-    if "t04" in f.lower():
-        return 1
-    return 0
 
 files = npr.permutation(glob(os.path.join('csvs', '*.csv')))
 
@@ -46,10 +46,10 @@ def files_to_cells(files):
         try:
             frame = pd.read_csv(f)
         except Exception as e:
-            print "==="
-            print f, "<<Failed to read"
-            print e
-            print "===="
+            print('===')
+            print('{} <<Failed to read'.format(f))
+            print(e)
+            print('===')
             continue
         track_id = frame['TRACK_ID']
         pos_x = frame['POSITION_X']
