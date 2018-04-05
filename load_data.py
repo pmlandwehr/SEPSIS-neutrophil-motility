@@ -8,6 +8,10 @@ import numpy.random as npr
 import pandas as pd
 from matplotlib import pylab as plt
 
+from sklearn.metrics import roc_curve, roc_auc_score, accuracy_score
+from sklearn.linear_model import LogisticRegression
+from sklearn.dummy import DummyClassifier
+
 
 def hex_to_rgb(value):
     lv = len(value)
@@ -24,19 +28,6 @@ def cell_type_from_file(f):
     if "t04" in f.lower():
         return 1
     return 0
-
-category10_in_hex = [
-      "1f77b4",
-      "ff7f0e",
-      "2ca02c",
-      "d62728",
-      "9467bd",
-      "8c564b",
-      "e377c2",
-      "7f7f7f",
-      "bcbd22",
-      "17becf"]
-category10 = [hex_to_rgb(val) for val in category10_in_hex]
 
 
 def files_to_cells(files):
@@ -99,21 +90,6 @@ def features(paths, label):
 
     return len(y), np.var(ddx), np.var(np.sign(dx))
 
-files = npr.permutation(glob(os.path.join('csvs', '*.csv')))
-
-dd = {}
-dd["Healthy"] = 0
-dd["T04"] = 1
-dd["T11"] = 2
-dd["T02"] = 3
-dd["T03"] = 4
-dd["T08"] = 5
-dd["UNKNOWN"] = 6
-
-idd = {v:k for k,v in dd.items()}
-
-
-plts = [["Healthy"], ["T04", "T02"], ["T11", "T03", "T08"]]
 
 def do_tsne():
     cell_accum, cell_status = files_to_cells(files)
@@ -158,12 +134,37 @@ def features_for_files(files):
     return X, Y
 
 
-from sklearn.metrics import roc_curve, roc_auc_score, accuracy_score
-from sklearn.linear_model import LogisticRegression
-from sklearn.dummy import DummyClassifier
+category10_in_hex = [
+      "1f77b4",
+      "ff7f0e",
+      "2ca02c",
+      "d62728",
+      "9467bd",
+      "8c564b",
+      "e377c2",
+      "7f7f7f",
+      "bcbd22",
+      "17becf"]
+category10 = [hex_to_rgb(val) for val in category10_in_hex]
+
+files = npr.permutation(glob(os.path.join('csvs', '*.csv')))
+
+dd = {
+    'Healthy': 0,
+    'T04': 1,
+    'T11': 2,
+    'T02': 3,
+    'T03': 4,
+    'T08': 5,
+    'UNKNOWN': 6
+}
+idd = {dd[key]: key for key in dd}
+
+plts = [["Healthy"], ["T04", "T02"], ["T11", "T03", "T08"]]
+
 lr = LogisticRegression()
 
-np.random.shuffle(files)
+npr.shuffle(files)
 all_data = [features_for_files([f]) for f in files]
 all_data, files = zip(*[(a,f) for (f,a) in zip(files, all_data) if len(a[0]) != 0])
 print len(all_data), "Valid files found"
@@ -174,25 +175,19 @@ all_Y = np.asarray(all_Y)
 def pat_id(f):
     tXX = f.split("-")[1]
     ds = f.split("-")[2]
-    r = tXX+"_"+ds
-    print r
+    r = '{}_{}'.format(tXX, ds)
+    print(r)
     return r
 
-patient_id = []
-for f in files:
-    patient_id.append(pat_id(f))
-
-data = []
-for y in all_Y:
-    data.append(np.mean(y))
-
+patient_id = [pat_id(f) for f in files]
+data = [np.mean(y) for y in all_Y]
 print(np.mean(data))
 
 def run_once():
     # train test split on a patient basis
-    pos_pat = defaultdict(lambda: [])
-    neg_pat = defaultdict(lambda: [])
-    all_pat = defaultdict(lambda: [])
+    pos_pat = defaultdict(list)
+    neg_pat = defaultdict(list)
+    all_pat = defaultdict(list)
     for i, (pat_id, X, Y) in enumerate(zip(patient_id, all_X, all_Y)):
         if np.mean(Y) == 1.0:
             pos_pat[pat_id].append((i, X))
@@ -203,8 +198,8 @@ def run_once():
     # TODO probabilistically round up or down
     n_neg = int(len(neg_pat.keys())*.5)
     # 5 pos, 7 neg
-    trPatIds = np.random.choice(pos_pat.keys(), size=2, replace=False).tolist()\
-               + np.random.choice(neg_pat.keys(), size=2, replace=False).tolist()
+    trPatIds = npr.choice(pos_pat.keys(), size=2, replace=False).tolist()\
+               + npr.choice(neg_pat.keys(), size=2, replace=False).tolist()
     tePatIds = list(set(patient_id) - set(trPatIds))
 
     idxs = []
@@ -228,14 +223,13 @@ def run_once():
     X = np.concatenate(trFX, axis=0)
     Y = np.concatenate(trFY, axis=0)
 
-    idxs = np.arange(len(Y))
-    np.random.shuffle(idxs)
-    spt = int(len(X)*.9)
+    idxs = npr.permutation(np.arange(len(Y)))
+    partition = int(len(X)*.9)
 
-    trX = X[idxs[0:spt]]
-    trY = Y[idxs[0:spt]]
-    teX = X[idxs[spt:]]
-    teY = Y[idxs[spt:]]
+    trX = X[idxs[:partition]]
+    trY = Y[idxs[:partition]]
+    teX = X[idxs[partition:]]
+    teY = Y[idxs[partition:]]
 
 
     lr.fit(trX, trY)
@@ -267,8 +261,8 @@ def run_once():
         actual.append(np.mean(Y))
 
     heldout_accur = accuracy_score(np.asarray(actual).astype("int"), np.asarray(preds) >= 0.5)
-    print heldout_accur
-    print "Of the %d files looked at"%len(preds)
+    print(heldout_accur)
+    print('Of the {} files looked at'.format(len(preds)))
     return heldout_auc
 
 accurs = [run_once() for x in trange(50)]
