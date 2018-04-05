@@ -65,13 +65,14 @@ def features(frame, draw_num):
     return features
 
 def load_labels():
-    ret = {}
-    for l in open("converted_data/labels.txt").readlines():
-        name, draws = l.strip().split(":")
-        print draws
-        draws = [int(x) for x in draws.split(",") if x!='']
-        ret[name] = draws
-    return ret
+    """Read in a file of labels with each row formatted as <name>:<draw>[,<draw>][,<draw>]... and save as a dict keyed on name"""
+    label_dict = {}
+    for line in open(os.path.join('converted_data', 'labels.txt'), 'r'):
+        name, draws = line.strip().split(":")
+        print(draws)
+        draws = [int(x) for x in draws.split(",") if x != '']
+        label_dict[name] = draws
+    return label_dict
 
 def gather_feats_labels(patients, name_to_feats, name_to_labels):
     X = []
