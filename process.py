@@ -11,9 +11,10 @@ from sklearn.preprocessing import StandardScaler, PolynomialFeatures
 
 
 def load_raw(patient_name, draw_num):
-    path = "converted_data/%s/control_%d.csv"%(patient_name, draw_num)
+    """Read in a pandas.DataFrame from converted_data/<patient_name>/control_<draw_num>.csv"""
+    path = os.path.join('converted_data', patient_name, 'control_{}.csv'.format(draw_num))
     if not os.path.exists(path):
-        print path, "Not found"
+        print('{} Not found'.format(path))
         return None
     frame = pd.read_csv(path)
     return frame
