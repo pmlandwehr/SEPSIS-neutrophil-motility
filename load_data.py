@@ -99,69 +99,7 @@ def features(paths, label):
     ddx = np.diff(x)
     ddy = np.diff(y)
 
-    #return (np.mean(dx), np.mean(dy), np.var(dx), np.var(dy), np.var(np.sign(dx)),
-            #np.var(np.sign(dy)), np.mean(ddx), np.mean(ddy), np.var(ddx), np.var(ddy),
-            #np.mean(d), np.var(d), np.mean(snr), np.var(snr),
-            #np.mean(contrast), np.var(contrast))
-
-    #return (np.mean(dx), np.mean(dy),
-            #np.var(dx), np.var(dy),
-            #np.var(np.sign(dx)), np.var(np.sign(dy)),
-            #np.mean(ddx), np.mean(ddy),
-            #np.var(ddx), np.var(ddy),
-            #np.mean(d), np.var(d),
-            #np.mean(snr), np.var(snr),
-            #np.mean(contrast), np.var(contrast))
-
-    #return (np.mean(contrast), np.mean(snr))
-    #return (np.mean(dx), np.mean(dy))
-            #np.var(dx), np.var(dy),
-            #np.var(np.sign(dx)), np.var(np.sign(dy)),
-            #np.mean(ddx), np.mean(ddy),
-            #np.var(ddx), np.var(ddy))
-
-    #return (np.random.rand(),)
-    #return (np.var(y), )
-    return (len(y), np.var(ddx), np.var(np.sign(dx)))
-    #return (np.mean(dx),
-            #np.var(dx),
-            #np.var(np.sign(dx)),
-            #np.mean(ddx),
-            #np.var(ddx))
-
-
-    #return (np.mean(ddx), np.mean(ddy))
-    #return (np.mean(dx), np.mean(dy), np.var(dx), np.var(dy), np.var(np.sign(dx)),
-            #np.var(np.sign(dy)), np.mean(ddx), np.mean(ddy), np.var(ddx), np.var(ddy),
-            #np.mean(d), np.var(d))
-            #np.mean(snr), np.var(snr),
-            #np.mean(contrast), np.var(contrast))
-    #return np.mean(ddx), np.mean(ddy), np.var(ddx), np.var(ddy)
-    #return np.mean(dx), np.mean(dy), np.var(dx), np.var(dy)
-
-    #plt.plot(dx)
-    #plt.show()
-
-#files_to_cells(files[8:])
-#feats_accum = []
-#for i, (x, status) in enumerate(zip(cell_accum, cell_status)):
-    #feats_accum.append(features(x))
-
-    #if status == 0:
-        #plt.plot(x[:, 1], x[:, 2], 'o-', color='r', alpha=0.3)
-    #if status == 1:
-        #plt.plot(x[:, 1], x[:, 2], 'o-', color='b', alpha=0.3)
-    #if status == 2:
-        #plt.plot(x[:, 1], x[:, 2], 'o-', color='k', alpha=0.3)
-    #if status == 3:
-        #plt.plot(x[:, 1], x[:, 2], 'o-', color='g', alpha=0.3)
-    #if i % 10 == 0 and i != 0:
-        #plt.show()
-#plt.show()
-
-
-#feats_accum = np.asarray(feats_accum)
-#cell_status = np.asarray(cell_status)
+    return len(y), np.var(ddx), np.var(np.sign(dx))
 
 dd = {}
 dd["Healthy"] = 0
