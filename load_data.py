@@ -386,29 +386,4 @@ def run_once():
     #plt.show()
 accurs = [run_once() for x in trange(50)]
 print np.mean(accurs), "mean_auc"
-#plt.hist(accurs, bins=10)
-#plt.xlabel("accuracy on heldout trials (random guessing is 57%)")
-#plt.ylabel("frequency")
 plt.show()
-
-#for n in range(4):
-    #plt.plot(feats_accum[:, 6][cell_status==n], feats_accum[:, 7][cell_status==n], 'o')
-#plt.legend(["Healthy", "Tramma", "Dia", "T11"])
-
-#plt.figure()
-#for n in range(4):
-    #plt.hist(feats_accum[:, 6][cell_status==n], alpha=0.4)
-
-#plt.figure()
-#for n in range(4):
-    #plt.hist(feats_accum[:, 7][cell_status==n], alpha=0.4)
-#plt.show()
-
-
-#print len(cell_accum)
-#plt.hist(cell_status)
-#plt.show()
-    #for c in cells:
-        #print c.shape
-        #plt.plot(c[:, 0], c[:, 1])
-    #plt.show()
