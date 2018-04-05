@@ -26,3 +26,6 @@ Regularized linear discriminant analysis via hold-out analysis with cross valida
 tSNE graphs	|Python	|Load_data.py
 Histogram of the AUC values from the held-out data is graphed |Python	| Process.py, Process_burns.py
 
+
+### About this fork
+I've found the original code for this paper kind of hard to read, so this is my attempt to reformat things, add docstrings, etc. It's entirely untested! Use as a replacement for the original at your own risk.
