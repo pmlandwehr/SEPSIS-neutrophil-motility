@@ -1,12 +1,13 @@
-import pandas as pd
-import glob
-import numpy as np
-from matplotlib import pylab as plt
+from glob import glob
+import os
 from tqdm import trange
 
-files = glob.glob("csvs/*.csv")
+import numpy as np
+import numpy.random as npr
+import pandas as pd
+from matplotlib import pylab as plt
 
-category10=[
+category10_in_hex = [
       "1f77b4",
       "ff7f0e",
       "2ca02c",
@@ -24,20 +25,19 @@ def hex_to_rgb(value):
         int(value[i:i + lv // 3], 16) / 255. for i in range(0, lv, lv // 3)
     )
 
-category10 = [hex_to_rgb(val) for val in category10]
+category10 = [hex_to_rgb(val) for val in category10_in_hex]
 
 def cell_type_from_file(f):
     print f
     if "PRESE" in f:
         return 0
-    elif "t02" in f.lower():
+    if "t02" in f.lower():
         return 1
-    elif "t04" in f.lower():
+    if "t04" in f.lower():
         return 1
-    else:
-        return 0
+    return 0
 
-np.random.shuffle(files)
+files = npr.permutation(glob(os.path.join('csvs', '*.csv')))
 
 def files_to_cells(files):
     cell_accum = []
