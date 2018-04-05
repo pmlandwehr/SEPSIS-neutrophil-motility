@@ -37,27 +37,6 @@ def cell_type_from_file(f):
     else:
         return 0
 
-
-    #if "Healthy" in f:
-        #return 0
-    #if "Trauma" in f:
-        #return 1
-    #if "T04" in f:
-        #return 1
-    #if "D01" in f:
-        #return 2
-    #if "T11" in f:
-        #return 3
-    #if "T02" in f:
-        #return 4
-    #if "T03" in f:
-        #return 5
-    #if "T08":
-        #return 6
-    #print f, "Not found"
-    #return 7
-
-
 np.random.shuffle(files)
 
 def files_to_cells(files):
@@ -119,69 +98,7 @@ def features(paths, label):
     ddx = np.diff(x)
     ddy = np.diff(y)
 
-    #return (np.mean(dx), np.mean(dy), np.var(dx), np.var(dy), np.var(np.sign(dx)),
-            #np.var(np.sign(dy)), np.mean(ddx), np.mean(ddy), np.var(ddx), np.var(ddy),
-            #np.mean(d), np.var(d), np.mean(snr), np.var(snr),
-            #np.mean(contrast), np.var(contrast))
-
-    #return (np.mean(dx), np.mean(dy),
-            #np.var(dx), np.var(dy),
-            #np.var(np.sign(dx)), np.var(np.sign(dy)),
-            #np.mean(ddx), np.mean(ddy),
-            #np.var(ddx), np.var(ddy),
-            #np.mean(d), np.var(d),
-            #np.mean(snr), np.var(snr),
-            #np.mean(contrast), np.var(contrast))
-
-    #return (np.mean(contrast), np.mean(snr))
-    #return (np.mean(dx), np.mean(dy))
-            #np.var(dx), np.var(dy),
-            #np.var(np.sign(dx)), np.var(np.sign(dy)),
-            #np.mean(ddx), np.mean(ddy),
-            #np.var(ddx), np.var(ddy))
-
-    #return (np.random.rand(),)
-    #return (np.var(y), )
     return (len(y), np.var(ddx), np.var(np.sign(dx)))
-    #return (np.mean(dx),
-            #np.var(dx),
-            #np.var(np.sign(dx)),
-            #np.mean(ddx),
-            #np.var(ddx))
-
-
-    #return (np.mean(ddx), np.mean(ddy))
-    #return (np.mean(dx), np.mean(dy), np.var(dx), np.var(dy), np.var(np.sign(dx)),
-            #np.var(np.sign(dy)), np.mean(ddx), np.mean(ddy), np.var(ddx), np.var(ddy),
-            #np.mean(d), np.var(d))
-            #np.mean(snr), np.var(snr),
-            #np.mean(contrast), np.var(contrast))
-    #return np.mean(ddx), np.mean(ddy), np.var(ddx), np.var(ddy)
-    #return np.mean(dx), np.mean(dy), np.var(dx), np.var(dy)
-
-    #plt.plot(dx)
-    #plt.show()
-
-#files_to_cells(files[8:])
-#feats_accum = []
-#for i, (x, status) in enumerate(zip(cell_accum, cell_status)):
-    #feats_accum.append(features(x))
-
-    #if status == 0:
-        #plt.plot(x[:, 1], x[:, 2], 'o-', color='r', alpha=0.3)
-    #if status == 1:
-        #plt.plot(x[:, 1], x[:, 2], 'o-', color='b', alpha=0.3)
-    #if status == 2:
-        #plt.plot(x[:, 1], x[:, 2], 'o-', color='k', alpha=0.3)
-    #if status == 3:
-        #plt.plot(x[:, 1], x[:, 2], 'o-', color='g', alpha=0.3)
-    #if i % 10 == 0 and i != 0:
-        #plt.show()
-#plt.show()
-
-
-#feats_accum = np.asarray(feats_accum)
-#cell_status = np.asarray(cell_status)
 
 dd = {}
 dd["Healthy"] = 0
@@ -220,11 +137,8 @@ def do_tsne():
         mask = (mask==1)
         plt.plot(points[:, 0][mask], points[:, 1][mask], "o", c=c, lw=0, alpha=0.5)
 
-    #plt.legend([" ".join(p) for p in plts])
     plt.legend(["Healthy", "Septic", "Non-Septic"])
     plt.show()
-
-#do_tsne()
 
 def features_for_files(files):
     cell_accum, cell_status = files_to_cells(files)
@@ -244,20 +158,10 @@ def features_for_files(files):
     Y = np.asarray(Y)
     return X, Y
 
-#def get_run_stats():
-
 from sklearn.metrics import roc_curve, roc_auc_score, accuracy_score
 from sklearn.linear_model import LogisticRegression
 from sklearn.dummy import DummyClassifier
 lr = LogisticRegression()
-
-#np.random.shuffle(files)
-#all_X, all_Y = features_for_files(files)
-## means version to see distribution of data
-#dc = DummyClassifier()
-#dc.fit(all_X, all_Y)
-#p = dc.predict(all_X)
-#print accuracy_score(all_Y, p), "Random guessing"
 
 np.random.shuffle(files)
 all_data = [features_for_files([f]) for f in files]
@@ -304,11 +208,6 @@ def run_once():
                + np.random.choice(neg_pat.keys(), size=2, replace=False).tolist()
     tePatIds = list(set(patient_id) - set(trPatIds))
 
-    #n_neg = int(len(neg_pat.keys())*.5)
-    #tePatIds = np.random.choice(pos_pat.keys(), size=3, replace=False).tolist()\
-               #+ np.random.choice(neg_pat.keys(), size=3, replace=False).tolist()
-    #trPatIds = list(set(patient_id) - set(tePatIds))
-
     idxs = []
 
     trFX = []
@@ -321,28 +220,11 @@ def run_once():
             trFX.append(X)
             trFY.append(Y)
 
-    #from tsne import bh_sne
-    #points = bh_sne(np.concatenate(trFX, axis=0).astype("float64"))
-    #mask = (np.concatenate(trFY, axis=0) == 0)
-    #plt.scatter(points[:, 0][mask == True], points[:, 1][mask == True], color='blue')
-    #plt.scatter(points[:, 0][mask == False], points[:, 1][mask == False], color='red')
-    #plt.show()
-
     for p in tePatIds:
         for pp in all_pat[p]:
             index, X, Y = pp
             teFX.append(X)
             teFY.append(Y)
-
-
-    #idxs = np.arange(pos_pat.keys())
-    #np.random.shuffle(idxs)
-
-    #n_holdout = 20
-    #shuf_all_X = all_X[idxs]
-    #shuf_all_Y = all_Y[idxs]
-    #X = np.concatenate(shuf_all_X[n_holdout:], axis=0)
-    #Y = np.concatenate(shuf_all_Y[n_holdout:], axis=0)
 
     X = np.concatenate(trFX, axis=0)
     Y = np.concatenate(trFY, axis=0)
@@ -360,27 +242,17 @@ def run_once():
     lr.fit(trX, trY)
     p = lr.predict_proba(trX)
     fpr, tpr, _ = roc_curve(trY, p[:, 1])
-    #plt.plot(fpr, tpr)
-    #print roc_auc_score(trY, p[:, 1]), accuracy_score(trY, p[:, 1] > 0.5)
 
     p = lr.predict_proba(teX)
     fpr, tpr, _ = roc_curve(teY, p[:, 1])
-    #plt.plot(fpr, tpr)
-    #print roc_auc_score(teY, p[:, 1]), accuracy_score(teY, p[:, 1] > 0.5)
-
-    #X,Y = features_for_files(files[0:n_holdout])
 
     # Make a new X,Y for heldout
     X = np.concatenate(teFX, axis=0)
     Y = np.concatenate(teFY, axis=0)
-    #X = np.concatenate(shuf_all_X[0:n_holdout], axis=0)
-    #Y = np.concatenate(shuf_all_Y[0:n_holdout], axis=0)
     p = lr.predict_proba(X)
     fpr, tpr, _ = roc_curve(Y, p[:, 1])
     plt.plot(fpr, tpr)
-    #print roc_auc_score(Y, p[:, 1]), accuracy_score(Y, p[:, 1] > 0.5)
     heldout_auc = roc_auc_score(Y, p[:, 1])
-    #plt.legend(["train", "test", "held out trials"])
 
     preds = []
     actual = []
@@ -388,8 +260,6 @@ def run_once():
         X = np.concatenate(teFX[i:i+1], axis=0)
         Y = np.concatenate(teFY[i:i+1], axis=0)
 
-        #X = np.concatenate(shuf_all_X[i:i+1], axis=0)
-        #Y = np.concatenate(shuf_all_Y[i:i+1], axis=0)
         if len(X) <= 0:
             #print "no data", files[i]
             continue
@@ -401,35 +271,10 @@ def run_once():
     heldout_accur = accuracy_score(np.asarray(actual).astype("int"), np.asarray(preds) >= 0.5)
     print heldout_accur
     print "Of the %d files looked at"%len(preds)
-    #return heldout_accur
     return heldout_auc
-    #return heldout_auc
-    #plt.show()
+
+
 accurs = [run_once() for x in trange(50)]
 print np.mean(accurs), "mean_auc"
-#plt.hist(accurs, bins=10)
-#plt.xlabel("accuracy on heldout trials (random guessing is 57%)")
-#plt.ylabel("frequency")
+
 plt.show()
-
-#for n in range(4):
-    #plt.plot(feats_accum[:, 6][cell_status==n], feats_accum[:, 7][cell_status==n], 'o')
-#plt.legend(["Healthy", "Tramma", "Dia", "T11"])
-
-#plt.figure()
-#for n in range(4):
-    #plt.hist(feats_accum[:, 6][cell_status==n], alpha=0.4)
-
-#plt.figure()
-#for n in range(4):
-    #plt.hist(feats_accum[:, 7][cell_status==n], alpha=0.4)
-#plt.show()
-
-
-#print len(cell_accum)
-#plt.hist(cell_status)
-#plt.show()
-    #for c in cells:
-        #print c.shape
-        #plt.plot(c[:, 0], c[:, 1])
-    #plt.show()
