@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
-import glob
-import pandas as pd
 import os
-from StringIO import StringIO
-files = glob.glob("/Patient_*Draw*-V*.csv")
-for i, f in enumerate(files):
-    print i, f
-    content = "\n".join(open(f).readlines()[1:])
+from glob import glob
+import pandas as pd
+from six import StringIO
+
+
+def process_draw_file(f):
+    content = '\n'.join(open(f).readlines()[1:])
     ff = StringIO(content)
 
     frame = pd.read_csv(ff)
@@ -28,19 +28,32 @@ for i, f in enumerate(files):
     fmlp = frame[[s+".1" for s in ss]].dropna()
     ltb4 = frame[[s+".2" for s in ss]].dropna()
 
-    column_names = ['track_n', 'slice_n', 'x', 'y', 'distance', 'velocity',
-                    'pixel_value']
+    column_names = ['track_n', 'slice_n', 'x', 'y', 'distance', 'velocity', 'pixel_value']
 
     patient_string = "_".join(f.split("/")[1].split("_")[1:3]).split(".")[0]
     draw_num = f.split("Draw")[1].split("-V")[0]
 
-    path = "converted_data/%s/control_%s.csv"%(patient_string, draw_num)
+    path = os.path.join('converted_data', patient_string, 'control_{}.csv'.format(draw_num))
+    
     d = os.path.dirname(path)
     if not os.path.exists(d):
         os.makedirs(d)
 
     control.to_csv(path, header=column_names)
-    path = "converted_data/%s/fmlp_%s.csv"%(patient_string, draw_num)
+    
+    path = os.path.join('converted_data', patient_string, 'fmlp_{}.csv'.format(draw_num))    
     fmlp.to_csv(path, header=column_names)
-    path = "converted_data/%s/ltb4_%s.csv"%(patient_string, draw_num)
+    
+    path = os.path.join('converted_data', patient_string, 'ltb4_{}.csv'.format(draw_num))   
     ltb4.to_csv(path, header=column_names)
+
+    
+def main():
+    files = glob("/Patient_*Draw*-V*.csv")
+    for i, f in enumerate(files):
+        print('{} {}'.format(i, f))
+        process_draw_file(f)
+ 
+
+if __name__ == "__main__":
+    main()
