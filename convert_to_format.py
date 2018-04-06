@@ -1,41 +1,46 @@
-import pandas as pd
-import glob
-import numpy as np
-from matplotlib import pylab as plt
+from glob import glob
+import os
 from tqdm import trange
 
-files = glob.glob("csvs/*.csv")
+import numpy as np
+import pandas as pd
+from matplotlib import pylab as plt
 
-category10=[
-      "1f77b4"
-    , "ff7f0e"
-    , "2ca02c"
-    , "d62728"
-    , "9467bd"
-    , "8c564b"
-    , "e377c2"
-    , "7f7f7f"
-    , "bcbd22"
-    , "17becf"
-]
+from sklearn.metrics import roc_curve, roc_auc_score, accuracy_score
+from sklearn.linear_model import LogisticRegression
+from sklearn.dummy import DummyClassifier
+
+
 def hex_to_rgb(value):
     lv = len(value)
     return tuple(
         int(value[i:i + lv // 3], 16) / 255. for i in range(0, lv, lv // 3)
     )
 
-category10 = [hex_to_rgb(val) for val in category10]
+files = glob(os.path.join('csvs', '*.csv'))
+
+category10_in_hex = [
+      "1f77b4",
+      "ff7f0e",
+      "2ca02c",
+      "d62728",
+      "9467bd",
+      "8c564b",
+      "e377c2",
+      "7f7f7f",
+      "bcbd22",
+      "17becf"]
+category10 = [hex_to_rgb(val) for val in category10_in_hex]
 
 def cell_type_from_file(f):
-    print f
+    print(f)
     if "PRESE" in f:
         return 0
-    elif "t02" in f.lower():
+    if "t02" in f.lower():
         return 1
-    elif "t04" in f.lower():
+    if "t04" in f.lower():
         return 1
-    else:
-        return 0
+    return 0
 
 np.random.shuffle(files)
 
@@ -100,17 +105,16 @@ def features(paths, label):
 
     return (len(y), np.var(ddx), np.var(np.sign(dx)))
 
-dd = {}
-dd["Healthy"] = 0
-dd["T04"] = 1
-dd["D01"] = 2
-dd["T11"] = 3
-dd["T02"] = 4
-dd["T03"] = 5
-dd["T08"] = 6
-dd["UNKNOWN"] = 7
-
-idd = {v:k for k,v in dd.items()}
+dd = {
+    'Healthy': 0,
+    'T04': 1,
+    'T11': 2,
+    'T02': 3,
+    'T03': 4,
+    'T08': 5,
+    'UNKNOWN': 6
+}
+idd = {dd[key]: key for key in dd}
 
 
 plts = [["Healthy"], ["T04", "T02"], ["T11", "T03", "T08"]]
@@ -158,9 +162,7 @@ def features_for_files(files):
     Y = np.asarray(Y)
     return X, Y
 
-from sklearn.metrics import roc_curve, roc_auc_score, accuracy_score
-from sklearn.linear_model import LogisticRegression
-from sklearn.dummy import DummyClassifier
+
 lr = LogisticRegression()
 
 np.random.shuffle(files)
@@ -269,12 +271,11 @@ def run_once():
         actual.append(np.mean(Y))
 
     heldout_accur = accuracy_score(np.asarray(actual).astype("int"), np.asarray(preds) >= 0.5)
-    print heldout_accur
-    print "Of the %d files looked at"%len(preds)
+    print(heldout_accur)
+    print('Of the {} files looked at'.format(len(preds)))
     return heldout_auc
 
 
 accurs = [run_once() for x in trange(50)]
-print np.mean(accurs), "mean_auc"
-
+print('mean_auc: {}'.format(np.mean(accurs)))
 plt.show()
